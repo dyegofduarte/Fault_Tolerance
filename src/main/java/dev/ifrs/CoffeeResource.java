@@ -7,6 +7,7 @@ import javax.inject.Inject;
 //import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -28,10 +29,11 @@ public class CoffeeResource {
 
     @GET
     @Retry(maxRetries = 4)
-    @Produces(MediaType.TEXT_PLAIN)
+    //@Produces(MediaType.TEXT_PLAIN)
     //@Produces(MediaType.APPLICATION_JSON)
     //@Consumes(MediaType.APPLICATION_JSON)
-    
+    @Produces(MediaType.APPLICATION_JSON)
+
     public List<Coffee> coffees() {
         final Long invocationNumber = counter.getAndIncrement();
 
@@ -54,8 +56,8 @@ public class CoffeeResource {
     @GET
     @Path("/{id}/recommendations")
     @Timeout(250)
-    @Produces(MediaType.TEXT_PLAIN)
-    public List<Coffee> recommendations(int id) {
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Coffee> recommendations(@PathParam("id") int id) {
         long started = System.currentTimeMillis();
         final long invocationNumber = counter.getAndIncrement();
 
@@ -81,7 +83,7 @@ public class CoffeeResource {
     @GET
     //@Produces(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response availability(int id) {
+    public Response availability(@PathParam("id") int id) {
         final Long invocationNumber = counter.getAndIncrement();
 
         Coffee coffee = coffeeRepository.getCoffeeById(id);
@@ -99,7 +101,7 @@ public class CoffeeResource {
             LOGGER.errorf("CoffeeResource#availability() invocation #%d failed: %s", invocationNumber, message);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(message)
-                    .type(MediaType.TEXT_PLAIN_TYPE)
+                    .type(MediaType.APPLICATION_JSON)
                     .build();
         }
     }
